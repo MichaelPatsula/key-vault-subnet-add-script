@@ -70,7 +70,7 @@ try {
         exit 1
     }
 
-    # Azure resource IDs are case-insensitive, so compare with -eq (PowerShell string comparison is case-insensitive by default).
+    # -contains is case-insensitive, matching Azure's case-insensitive resource IDs.
     $existingIds = @($existing | Where-Object { $_ -and $_.Trim() -ne '' } | ForEach-Object { $_.Trim() })
 
     # REF_FOUND: the reference subnet must already be in the vault's rules, otherwise nothing changes.
@@ -98,15 +98,15 @@ try {
 
     # Add the new subnet to the key vault's network rules.
     Write-Output "Adding subnet: $NewSubnet"
-    # Suppress the CLI's JSON output; errors are captured so they can be reported.
-    $addOutput = & az keyvault network-rule add `
+    # Suppress the CLI's JSON output; errors go to the temp file so they can be reported.
+    & az keyvault network-rule add `
         --name $KeyVault `
         --resource-group $ResourceGroup `
         --subnet $NewSubnet `
-        -o none 2>&1
+        -o none 2>$errFile
     if ($LASTEXITCODE -ne 0) {
         [Console]::Error.WriteLine("Error: could not add subnet to '$KeyVault' in '$ResourceGroup'. Azure CLI output:")
-        $addOutput | ForEach-Object { [Console]::Error.WriteLine($_) }
+        Get-Content $errFile | ForEach-Object { [Console]::Error.WriteLine($_) }
         exit 1
     }
 

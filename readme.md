@@ -1,6 +1,6 @@
 # Key Vault Subnet Scripts
 
-Bash scripts that add a new subnet to a key vault's virtual network rules, but only when a reference subnet is already allowed.
+Bash scripts that add a new subnet to a key vault's virtual network rules, but only when a reference subnet is already allowed. For the PowerShell versions, see [README-powershell.md](./README-powershell.md).
 
 ## Scripts
 
